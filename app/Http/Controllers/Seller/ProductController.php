@@ -161,7 +161,7 @@ public function index(Request $request)
     $search = null;
     $category_id = $request->category_id;  // Capture the selected category ID
 
-    $products = Product::with('categories')
+    $products = Product::with(['categories','main_category'])
         ->where('user_id', Auth::user()->id)
         ->where('digital', 0)
         ->where('auction_product', 0)
@@ -189,7 +189,22 @@ public function index(Request $request)
 
     // Get all categories for the dropdown
     $categories = Category::where('parent_id', '!=', 0)->get();
-    return view('seller.product.products.index', compact('products', 'search', 'categories', 'category_id'));
+	 $shop = Auth::user()->shop;
+
+    return view('seller.product.products.index', compact('products', 'search', 'categories', 'category_id', 'shop'));
+}
+  
+  public function updateDefaultSort(Request $request)
+{
+    $request->validate([
+        'default_sort' => 'required|in:newest,cheapest',
+    ]);
+
+    $shop = Auth::user()->shop;
+    $shop->default_sort = $request->default_sort;
+    $shop->save();
+
+    return response()->json(['success' => true, 'message' => 'Default sort updated']);
 }
 
 

@@ -36,11 +36,13 @@
     <meta name="twitter:image" content="{{ uploaded_asset($detailedProduct->meta_img) }}">
     <meta name="twitter:data1" content="{{ single_price($detailedProduct->unit_price) }}">
     <meta name="twitter:label1" content="Price">
-
+        @php
+            $category = App\Models\Category::where('parent_id', $detailedProduct->main_category->parent_id)->first();
+        @endphp
     <!-- Open Graph data -->
     <meta property="og:title" content="{{ $detailedProduct->meta_title }}" />
     <meta property="og:type" content="og:product" />
-    <meta property="og:url" content="{{ route('product', $detailedProduct->slug) }}" />
+    <meta property="og:url" content="{{ route('product', ['category_slug'=>$category->slug,'sub_category_slug'=>$detailedProduct->main_category->slug,'slug'=>$detailedProduct->slug]) }}" />
     <meta property="og:image" content="{{ uploaded_asset($detailedProduct->meta_img) }}" />
     <meta property="og:description" content="{{ $detailedProduct->meta_description }}" />
     <meta property="og:site_name" content="{{ get_setting('meta_title') }}" />
@@ -171,9 +173,12 @@
                                 value="{{ $detailedProduct->name }}" placeholder="{{ translate('Product Name') }}"
                                 required>
                         </div>
+                      	 @php
+         				   $main_category = App\Models\Category::where('id', $detailedProduct->main_category->parent_id)->first();
+        				@endphp
                         <div class="form-group">
                             <textarea class="form-control rounded-0" rows="8" name="message" required
-                                placeholder="{{ translate('Your Question') }}">{{ route('product', $detailedProduct->slug) }}</textarea>
+                                placeholder="{{ translate('Your Question') }}">{{ route('product', ['category_slug'=>$main_category->slug , 'sub_category_slug'=>$detailedProduct->main_category->slug,'slug'=>$detailedProduct->slug]) }}</textarea>
                         </div>
                     </div>
                     <div class="modal-footer">

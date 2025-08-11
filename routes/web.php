@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AizUploadController;
 use App\Http\Controllers\Auth\LoginController;
@@ -55,6 +54,16 @@ use App\Http\Controllers\MessageNotificationController;
 use App\Http\Controllers\Seller\MessageNotificationController_seller;
 use App\Http\Controllers\Seller\ConversationController as SellerConversationController;
 use App\Http\Controllers\User\ConversationController as UserConversationController;
+
+use App\Http\Controllers\Auth\ForgotPasswordController;
+
+  Route::post('/seller/shop/update-default-sort', [App\Http\Controllers\Seller\ProductController::class, 'updateDefaultSort'])->name('seller.shop.update-default-sort');
+
+Route::post('/password/phone', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.phone');
+Route::post('/password/reset-phone', [ForgotPasswordController::class, 'resetPasswordWithPhone'])->name('password.reset.phone');
+Route::get('/password/phone', function () {
+    return view('auth.boxed.forgot_phone'); // This is the phone entry form
+})->name('password.phone.form');
 
 Route::get('/featured-products', [HomeController::class, 'featuredProductsPage'])->name('featured.products');
 
@@ -218,7 +227,7 @@ Route::controller(HomeController::class)->group(function () {
     //Todays Deal Details Page
     Route::get('/todays-deal', 'todays_deal')->name('todays-deal');
 
-    Route::get('/product/{slug}', 'product')->name('product');
+    Route::get('/product/{category_slug}/{sub_category_slug}/{slug}', 'product')->name('product');
     Route::post('/product/variant-price', 'variant_price')->name('products.variant_price');
     Route::get('/shop/{slug}', 'shop')->name('shop.visit');
     Route::get('/shop/{slug}/{type}', 'filter_shop')->name('shop.visit.type');

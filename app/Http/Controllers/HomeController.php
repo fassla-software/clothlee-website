@@ -265,13 +265,13 @@ $user = User::whereIn('user_type', ['customer', 'seller'])->where('phone', $requ
         return view('frontend.track_order');
     }
 
-    public function product(Request $request, $slug)
+    public function product(Request $request,$category_slug,$sub_category_slug ,$slug)
     {
         if (!Auth::check()) {
             session(['link' => url()->current()]);
         }
 
-        $detailedProduct  = Product::with('reviews', 'brand', 'stocks', 'user', 'user.shop')->where('auction_product', 0)->where('slug', $slug)->where('approved', 1)->first();
+        $detailedProduct  = Product::with('reviews', 'brand', 'stocks', 'user', 'user.shop','main_category')->where('auction_product', 0)->where('slug', $slug)->where('approved', 1)->first();
 
         if ($detailedProduct != null && $detailedProduct->published) {
             if ((get_setting('vendor_system_activation') != 1) && $detailedProduct->added_by == 'seller') {

@@ -157,7 +157,7 @@ class OrderController extends Controller
             $shippingAddress['address']     = $address->address;
             $shippingAddress['country']     = $address->country->name;
             $shippingAddress['state']       = $address->state->name;
-            $shippingAddress['city']        = $address->city->name;
+          	$shippingAddress['city']        = $address->state->name;
             $shippingAddress['postal_code'] = $address->postal_code;
             $shippingAddress['phone']       = $address->phone;
             if ($address->latitude || $address->longitude) {
@@ -288,6 +288,11 @@ class OrderController extends Controller
         }
 
         $combined_order->save();
+      	
+      	$order->load('orderDetails');
+      	
+     	(new CommissionController())->calculateCommission($order);
+
 
         $request->session()->put('combined_order_id', $combined_order->id);
     }

@@ -74,10 +74,15 @@ class RegisterController extends Controller
                 'phone' => $request->phone,
           		'user_type' => 'customer',
                 'password' => Hash::make($request->password),
+                 'verification_code' => rand(100000, 999999),
         ]);
     
-    
+        $verification_code = rand(100000, 999999);
+
     try {
+           $otpController = new OTPVerificationController;
+        $sendResult = $otpController->send_code($user);
+
     $adminId = 9;
 
     $conversation = \App\Models\Conversation::create([
@@ -104,7 +109,7 @@ class RegisterController extends Controller
         $this->guard()->login($user);
 
 
-        return redirect()->route('home');
+        return redirect()->route('verification');
 }
   
   

@@ -11,11 +11,11 @@
                         </div>
 
                         <div class="col-lg-6 p-4 p-lg-5 d-flex flex-column justify-content-center border right-content" style="height: auto;">
-                            <!-- Site Icon -->
+                            <!-- Site Icon
                             <div class="size-48px mb-3 mx-auto mx-lg-0">
                                 <img src="{{ uploaded_asset(get_setting('site_icon')) }}" alt="{{ translate('Site Icon')}}" class="img-fit h-100">
                             </div>
-
+ -->
                             <!-- Titles -->
                             <div class="text-center text-lg-left">
                                 <h1 class="fs-20 fs-md-20 fw-700 text-primary" style="text-transform: uppercase;">{{ translate('Welcome to') }} {{ env('APP_NAME') }}</h1>

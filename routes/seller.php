@@ -3,6 +3,7 @@
 use App\Http\Controllers\AizUploadController;
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\Seller\NotificationController_seller;
+use App\Http\Controllers\Seller\SmsRequestController;
 use App\Http\Controllers\Seller\NotificationTypeController_seller;
 use App\Http\Controllers\Seller\DashboardController;
 
@@ -37,8 +38,21 @@ Route::controller(NotificationTypeController_seller::class)->group(function () {
     Route::get('/notification-type/destroy/{id}', 'destroy')->name('seller.notification-type.destroy');
     Route::post('/notification-type/bulk_delete', 'bulkDelete')->name('seller.notifications-type.bulk_delete');
     Route::post('/notification-type.get-default-text', 'getDefaulText')->name('seller.notification_type.get_default_text');
+  	
 });
 
+
+Route::controller(SmsRequestController::class)->group(function () {
+	Route::get('/sms-requests','index')->name('sms_requests.index');
+  	Route::post('/sms-requests/store','store')->name('sms_requests.store');
+  	Route::post('/sms-requests/bulk-upload','bulkStore')->name('sms_requests.bulk-upload');
+  	Route::get('/admin/sms-requests','getAllRequestedShops')->name('admin.sms_requests');
+  	Route::post('/admin/sms-requests/shop-request','getShopRequest')->name('admin.shop_requests');
+	Route::post('/admin/sms-requests/update-status','updateStatus')->name('admin.update-request-status');
+  	Route::post('/admin/sms-requests/send-all','sendAll')->name('admin.send_all_sms');
+  	Route::get('/download-sms-file',  'downloadFile')->name('admin.download_sms_file');
+
+});
 
 
 //Upload

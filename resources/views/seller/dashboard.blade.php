@@ -439,7 +439,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6 col-md-6 col-lg-3">
+        <div class="col-sm-6 col-md-6 col-lg-3" style="display:none">
             <a href="{{ route('seller.money_withdraw_requests.index') }}"
                 class="card mb-4 p-4 text-center bg-soft-primary h-180px">
                 <div class="fs-16 fw-600 text-primary">
@@ -547,10 +547,13 @@
             data-md-items="3" data-sm-items="2" data-arrows="true">
 
             @foreach ($products as $key => $product)
+                  @php
+                     $pCategory= App\Models\Category::where('id',$product->main_category->parent_id)->first();             
+                  @endphp
                 <div class="carousel-box">
                     <div class="aiz-card-box border border-light rounded shadow-sm hov-shadow-md mb-2 has-transition bg-white" style="min-height: 350px;">
                         <div class="position-relative">
-                            <a href="{{ route('product', $product->slug) }}" class="d-block">
+                            <a href="{{ route('product',[ $pCategory->slug,$product->main_category->slug, $product->slug]) }}" class="d-block">
                                 <img class="img-fit lazyload mx-auto w-100 h-auto object-cover" 
                                     style="max-height: 300px;"
                                     src="{{ static_asset('assets/img/placeholder.jpg') }}"
@@ -570,7 +573,7 @@
                                 {{ renderStarRating($product->rating) }}
                             </div>
                             <h3 class="fw-600 fs-13 text-truncate-2 lh-1-4 mb-0">
-    <a href="{{ route('product', $product->slug) }}" class="d-block text-reset">
+    <a href="{{ route('product',[$pCategory->slug,$product->main_category->slug, $product->slug]) }}" class="d-block text-reset">
         {{ \App\Models\Category::find($product->category_id)?->getTranslation('name') ?? 'No Category' }}
     </a>
 </h3>

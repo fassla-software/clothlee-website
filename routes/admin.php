@@ -100,6 +100,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     Route::resource('brands', BrandController::class);
     Route::controller(BrandController::class)->group(function () {
         Route::get('/brands/edit/{id}', 'edit')->name('brands.edit');
+      	Route::put('/brands/{id}/update-admin-to-pay','updateAdminToPay');
         Route::get('/brands/destroy/{id}', 'destroy')->name('brands.destroy');
     });
 
@@ -181,7 +182,35 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/sellers/payment_modal', 'payment_modal')->name('sellers.payment_modal');
         Route::post('/sellers/profile_modal', 'profile_modal')->name('sellers.profile_modal');
         Route::post('/sellers/approved', 'updateApproved')->name('sellers.approved');
-      
+        Route::group(['as' => 'admin.seller_packages.'], function() {
+        // Index/List Route
+        Route::get('seller-packages', 'sellerPlansIndex')
+            ->name('index');
+
+        // Create Routes
+        Route::get('seller-packages/create','createPlan')
+            ->name('create');
+
+        Route::post('seller-packages/store',  'storePlan')
+            ->name('store');
+
+        // Edit/Update Routes
+        Route::get('seller-packages/{id}/edit',  'editPlan')
+            ->name('edit');
+
+        Route::post('seller-packages/{id}/update',  'updatePlan')
+            ->name('update');
+
+        // Delete Route
+        Route::delete('seller-packages/{id}',  'destroyPlan')
+            ->name('destroy');
+
+        // Show Route
+        Route::get('seller-packages/{id}',  'showPlan')
+            ->name('show');
+    });
+      Route::post('sellers/{shop}/assign-plan', [SellerController::class, 'assignPlan'])->name('sellers.assign-plan');
+
       
       Route::post('/sellers/{id}/update-commision', 'updateCommision')->name('sellers.updatePrice');
 

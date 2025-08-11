@@ -124,17 +124,54 @@
                             </label>
                         </td>
                         <td>{{ $shop->user->products->count() }}</td>
-                        <td>
+                     <td>
+                        <div class="display-mode">
                             @if ($shop->admin_to_pay >= 0)
-                                {{ single_price($shop->admin_to_pay) }}
+                                <span class="amount-value">{{ single_price($shop->admin_to_pay) }}</span>
                             @else
-                                {{ single_price(abs($shop->admin_to_pay)) }} ({{ translate('Due to Admin') }})
+                                <span class="amount-value">{{ single_price(abs($shop->admin_to_pay)) }}</span> ({{ translate('Due to Admin') }})
                             @endif
-                        </td>
+                            <button type="button" class=" btn btn-sm btn-warning edit-btn">  <i class="fa fa-edit"></i> </button>
+                        </div>
+
+                        <div class="edit-mode" style="display: none;">
+                            <div class="input-group">
+                                <input type="number" 
+                                       name="admin_to_pay" 
+                                       class="form-control amount-input" 
+                                       value="{{ $shop->admin_to_pay }}" 
+                                       step="0.01"
+                                       data-id="{{ $shop->id }}"
+                                       >
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-sm btn-success save-btn">  <i class="fa fa-check"></i></button>
+                                </div>
+                            </div>
+                            <div class="error-message text-danger mt-1"></div>
+                        </div>
+              	      </td>
+
                         <td>
                             @if($shop->user->banned)
                                 <span class="badge badge-inline badge-danger">{{ translate('Ban') }}</span>
-                            @else
+                 [2025-07-02 01:04:18] production.ERROR: Attempt to read property "banned" on null {"exception":"[object] (ErrorException(code: 0): Attempt to read property \"banned\" on null at /home/cloth/htdocs/www.clothlee.com/app/Http/Controllers/HomeController.php:343)
+[stacktrace]
+#0 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(272): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError()
+#1 /home/cloth/htdocs/www.clothlee.com/app/Http/Controllers/HomeController.php(343): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->{closure:Illuminate\\Foundation\\Bootstrap\\HandleExceptions::forwardsTo():271}()
+#2 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\\Http\\Controllers\\HomeController->shop()
+#3 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(43): Illuminate\\Routing\\Controller->callAction()
+#4 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Routing/Route.php(259): Illuminate\\Routing\\ControllerDispatcher->dispatch()
+#5 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Routing/Route.php(205): Illuminate\\Routing\\Route->runController()
+#6 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Routing/Router.php(798): Illuminate\\Routing\\Route->run()
+#7 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(141): Illuminate\\Routing\\Router->{closure:Illuminate\\Routing\\Router::runRouteWithinStack():797}()
+#8 /home/cloth/htdocs/www.clothlee.com/app/Http/Middleware/CheckForMaintenanceMode.php(64): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():139}()
+#9 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): App\\Http\\Middleware\\CheckForMaintenanceMode->handle()
+#10 /home/cloth/htdocs/www.clothlee.com/app/Http/Middleware/HttpsProtocol.php(20): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}()
+#11 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): App\\Http\\Middleware\\HttpsProtocol->handle()
+#12 /home/cloth/htdocs/www.clothlee.com/app/Http/Middleware/Language.php(35): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}()
+#13 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): App\\Http\\Middleware\\Language->handle()
+#14 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():155}:156}()
+#15 /home/cloth/htdocs/www.clothlee.com/vendor/laravel/framework/src/Illumin           @else
                                 <span class="badge badge-inline badge-success">{{ translate('Regular') }}</span>
                             @endif
                         </td>
@@ -409,6 +446,66 @@ function applyPrice(productId) {
         alert('Please enter a valid price.');
     }
 }
+   $(document).ready(function() {
+    // Show edit form
+    $(document).on('click', '.edit-btn', function() {
+        const td = $(this).closest('td');
+        td.find('.display-mode').hide();
+        td.find('.edit-mode').show();
+        td.find('.amount-input').focus();
+    });
+
+    // Save changes via AJAX
+    $(document).on('click', '.save-btn', function() {
+        const td = $(this).closest('td');
+        const input = td.find('.amount-input');
+        const newValue = input.val();
+        const shopId = input.data('id'); // ✅ Use data-id
+
+        td.find('.error-message').text('');
+
+        if (newValue === '' || isNaN(newValue)) {
+            td.find('.error-message').text('Please enter a valid amount.');
+            return;
+        }
+
+        $.ajax({
+            url: '/admin/brands/' + shopId + '/update-admin-to-pay',
+            method: 'PUT',
+            data: {
+                _token: '{{ csrf_token() }}',
+                admin_to_pay: newValue
+            },
+            success: function(response) {
+                if (response.success) {
+                    const amountValue = td.find('.amount-value');
+                    if (newValue >= 0) {
+                        amountValue.text(response.formatted_amount);
+                    } else {
+                        amountValue.text(response.formatted_amount + ' ({{ translate("Due to Admin") }})');
+                    }
+                    td.find('.edit-mode').hide();
+                    td.find('.display-mode').show();
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    td.find('.error-message').text(xhr.responseJSON.message || 'Validation error');
+                } else {
+                    td.find('.error-message').text(xhr.responseJSON.message);
+                }
+            }
+        });
+    });
+
+    // Save on Enter key
+    $(document).on('keypress', '.amount-input', function(e) {
+        if (e.which === 13) {
+            $(this).closest('td').find('.save-btn').click();
+            return false;
+        }
+    });
+});
 
     </script>
 @endsection

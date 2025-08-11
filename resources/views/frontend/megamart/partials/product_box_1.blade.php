@@ -1,10 +1,11 @@
 @php
     $cart_added = [];
+	$main_category=App\Models\Category::where('id',$product->main_category->parent_id)->first();
 @endphp
 <div class="aiz-card-box h-auto bg-white py-3 hov-scale-img">
     <div class="position-relative h-140px h-md-170px img-fit overflow-hidden">
         @php
-            $product_url = route('product', $product->slug);
+            $product_url = route('product',[$main_category->slug,$product->main_category->slug,$product->slug]);
             if ($product->auction_product == 1) {
                 $product_url = route('auction-product', $product->slug);
             }

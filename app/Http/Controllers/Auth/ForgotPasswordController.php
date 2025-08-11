@@ -44,41 +44,55 @@ class ForgotPasswordController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function sendResetLinkEmail(Request $request)
-    {
-        
-        $phone = "+{$request['country_code']}{$request['phone']}";
-        if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
-            $user = User::where('email', $request->email)->first();
-            if ($user != null) {
-                $user->verification_code = rand(100000,999999);
-                $user->save();
+{
+    $request->validate([
+        'phone' => 'required|numeric'
+    ]);
 
-                $array['view'] = 'emails.verification';
-                $array['from'] = env('MAIL_FROM_ADDRESS');
-                $array['subject'] = translate('Password Reset');
-                $array['content'] = translate('Verification Code is').': '. $user->verification_code;
+    $user = User::where('phone', $request->phone)->first();
 
-                Mail::to($user->email)->queue(new SecondEmailVerifyMailManager($array));
+    if ($user) {
+        $user->verification_code = rand(100000, 999999);
+        $user->save();
 
-                return view('auth.'.get_setting('authentication_layout_select').'.reset_password');
-            }
-            else {
-                flash(translate('No account exists with this email'))->error();
-                return back();
-            }
-        }
-        else{
-            $user = User::where('phone', $phone)->first();
-            if ($user != null) {
-                $user->verification_code = rand(100000,999999);
-                $user->save();
-                SmsUtility::password_reset($user);
-                return view('otp_systems.frontend.auth.'.get_setting('authentication_layout_select').'.reset_with_phone');
-            }
-            else {
-                flash(translate('No account exists with this phone number'))->error();
-                return back();
-            }
-        }
+        SmsUtility::password_reset($user);
+
+        return view('auth.boxed.reset_password_phone', ['phone' => $user->phone]); // Force your view here
+    } else {
+        flash(translate('No account exists with this phone number'))->error();
+        return back();
     }
+}
+  
+  
+  
+ public function resetPasswordWithPhone(Request $request)
+{
+    $request->validate([
+        'phone' => 'required',
+        'code' => 'required|digits:6',
+        'password' => 'required|min:6|confirmed',
+    ]);
+
+    $user = User::where('phone', $request->phone)
+                ->where('verification_code', $request->code)
+                ->first();
+
+    if (!$user) {
+        return view('auth.boxed.reset_password_phone', [
+            'phone' => $request->phone,
+        ])->withErrors(['code' => translate('Invalid code or phone number.')]);
+    }
+
+    $user->password = bcrypt($request->password);
+    $user->verification_code = null;
+    $user->save();
+
+    auth()->login($user);
+
+    return redirect('/dashboard')->with('status', translate('Password successfully changed.'));
+}
+
+
+
 }

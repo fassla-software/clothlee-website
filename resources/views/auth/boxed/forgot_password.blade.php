@@ -29,7 +29,7 @@
                             <!-- Send password reset link or code form -->
                             <div class="pt-3">
                                 <div class="">
-                                    <form class="form-default" role="form" action="{{ route('password.email') }}" method="POST">
+						<form class="form-default" role="form" action="{{ route('password.phone') }}" method="POST">
                                         @csrf
                                         
                                         <!-- Email or Phone -->
@@ -50,10 +50,13 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            
+                                      
+                                            <!--
                                             <div class="form-group text-right">
                                                 <button class="btn btn-link p-0 text-primary" type="button" onclick="toggleEmailPhone(this)"><i>*{{ translate('Use Email Instead') }}</i></button>
                                             </div>
+											-->
+                                      
                                         @else
                                             <div class="form-group">
                                                 <label for="email" class="fs-12 fw-700 text-soft-dark">{{  translate('Email') }}</label>

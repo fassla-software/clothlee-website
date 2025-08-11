@@ -41,7 +41,30 @@ class SendSMSUtility
             curl_close($ch);
 
             return $response;
-        } elseif (OtpConfiguration::where('type', 'twillo')->first()->value == 1) {
+        }elseif (OtpConfiguration::where('type', 'advansystelecom')->first()?->value == 1) {
+        $url = env('ADVANSYS_API_URL');
+        $apiKey = env('ADVANSYS_API_KEY');
+
+       $payload = [
+           'PhoneNumber' => $to,
+            'Message' => $text,
+            'SenderName' => $from,
+            'RequestID' => uniqid('msg_'),
+       ];
+
+     $ch = curl_init($url);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+     curl_setopt($ch, CURLOPT_POST, true);
+     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+     curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: ' . $apiKey,
+        'Content-Type: application/json',
+             ]);
+       $response = curl_exec($ch);
+       curl_close($ch);
+   
+       return $response;
+          } elseif (OtpConfiguration::where('type', 'twillo')->first()->value == 1) {
             $sid = env("TWILIO_SID"); // Your Account SID from www.twilio.com/console
             $token = env("TWILIO_AUTH_TOKEN"); // Your Auth Token from www.twilio.com/console
             $type = env("TWILLO_TYPE"); // sms type

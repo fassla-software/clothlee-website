@@ -579,6 +579,8 @@
                         </ul>
                     </li>
                 @endcanany
+  					
+             
 
                 <!-- Sellers -->
                 @if (get_setting('vendor_system_activation') == 1)
@@ -604,7 +606,11 @@
                                             @if($sellers > 0)<span class="badge badge-info">{{ $sellers }}</span> @endif
                                         </a>
                                     </li>
-                              
+                                <li class="aiz-side-nav-item">
+                                        <a href="/admin/seller-packages" class="aiz-side-nav-link {{ areActiveRoutes(['customer_packages.index', 'customer_packages.create', 'customer_packages.edit'])}}">
+                                            <span class="aiz-side-nav-text">{{ translate('Subscription Plans') }}</span>
+                                        </a>
+                                    </li>
                               <!-- Add Sellers -->
                                     <li class="aiz-side-nav-item">
                                         <a href="{{ route('sellers.adminCreate') }}" class="aiz-side-nav-link {{ areActiveRoutes(['sellers.adminCreate']) }}">
@@ -661,7 +667,7 @@
                 @endif
 
                 {{-- Uploads Files --}}
-                <li class="aiz-side-nav-item">
+                <li class="aiz-side-nav-item" style="display:none">
                     <a href="{{ route('uploaded-files.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['uploaded-files.create'])}}">
                         <div class="aiz-side-nav-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -682,6 +688,14 @@
             </svg>
         </div>
         <span class="aiz-side-nav-text">{{ translate('Send Message') }}</span>
+    </a>
+</li> 
+<li class="aiz-side-nav-item">
+    <a href="{{ route('admin.sms_requests') }}" class="aiz-side-nav-link {{ areActiveRoutes(['message_notification.create']) }}">
+        <div class="aiz-side-nav-icon">
+			        <i class="las la-question-circle aiz-side-nav-icon"></i>
+        </div>
+        <span class="aiz-side-nav-text">{{ translate('SMS Requests') }}</span>
     </a>
 </li>
 
@@ -764,7 +778,7 @@
 
                 <!--Blog System-->
                 @canany(['view_blogs','view_blog_categories'])
-                    <li class="aiz-side-nav-item">
+                    <li class="aiz-side-nav-item" style="display:none">
                         <a href="#" class="aiz-side-nav-link">
                             <div class="aiz-side-nav-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -1050,7 +1064,7 @@
                 <!-- Offline Payment Addon-->
                 @if (addon_is_activated('offline_payment'))
                     @canany(['view_all_manual_payment_methods','view_all_offline_wallet_recharges','view_all_offline_customer_package_payments','view_all_offline_seller_package_payments'])
-                        <li class="aiz-side-nav-item">
+                        <li class="aiz-side-nav-item"  display=none>
                             <a href="#" class="aiz-side-nav-link">
                                 <div class="aiz-side-nav-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -1199,7 +1213,7 @@
                 <!--OTP addon -->
                 @if (addon_is_activated('otp_system'))
                     @canany(['otp_configurations','sms_templates','sms_providers_configurations','send_bulk_sms'])
-                        <li class="aiz-side-nav-item">
+                        <li class="aiz-side-nav-item" style="display:none">
                             <a href="#" class="aiz-side-nav-link">
                                 <div class="aiz-side-nav-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -1278,7 +1292,7 @@
 
                 <!-- Website Setup -->
                 @canany(['header_setup','footer_setup','view_all_website_pages','website_appearance','authentication_layout_settings'])
-                    <li class="aiz-side-nav-item">
+                    <li class="aiz-side-nav-item" style="display:none">
                         <a href="#" class="aiz-side-nav-link {{ areActiveRoutes(['website.footer', 'website.header'])}}" >
                             <div class="aiz-side-nav-icon">
                                 <svg id="Group_28315" data-name="Group 28315" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -1350,7 +1364,7 @@
                         'pickup_point_setup','smtp_settings','payment_methods_configurations','order_configuration','file_system_&_cache_configuration',
                         'social_media_logins','facebook_chat','facebook_comment','analytics_tools_configuration','google_recaptcha_configuration','google_map_setting',
                         'google_firebase_setting','shipping_configuration','shipping_country_setting','manage_shipping_states','manage_shipping_cities','manage_zones','manage_carriers'])
-                    <li class="aiz-side-nav-item">
+                    <li class="aiz-side-nav-item" style="display:none">
                         <a href="#" class="aiz-side-nav-link">
                             <div class="aiz-side-nav-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -1558,7 +1572,7 @@
 
                 <!-- Staffs -->
                 @canany(['view_all_staffs','view_staff_roles'])
-                    <li class="aiz-side-nav-item">
+                    <li class="aiz-side-nav-item" style="display:none">
                         <a href="#" class="aiz-side-nav-link">
                             <div class="aiz-side-nav-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -1597,7 +1611,7 @@
 
                 <!-- System Update & Server Status -->
                 @canany(['system_update','server_status'])
-                    <li class="aiz-side-nav-item">
+                    <li class="aiz-side-nav-item" style="display:none">
                         <a href="#" class="aiz-side-nav-link">
                             <div class="aiz-side-nav-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -1657,7 +1671,7 @@
 
                 <!-- Addon Manager -->
                 @can('manage_addons')
-                    <li class="aiz-side-nav-item">
+                    <li class="aiz-side-nav-item" style="display:none">
                         <a href="{{route('addons.index')}}" class="aiz-side-nav-link {{ areActiveRoutes(['addons.index', 'addons.create'])}}">
                             <div class="aiz-side-nav-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">

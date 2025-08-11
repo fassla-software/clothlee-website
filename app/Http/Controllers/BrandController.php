@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Brand;
+use App\Models\Shop;
 use App\Models\BrandTranslation;
 use App\Models\Product;
 use Illuminate\Support\Str;
@@ -25,7 +26,9 @@ class BrandController extends Controller
     public function index(Request $request)
     {
         $sort_search =null;
-        $brands = Brand::orderBy('name', 'asc');
+        $brands = Cache::remeber("brands",now()->addMinutes(10),function (){
+          		return  Brand::orderBy('name', 'asc')->get();
+        });
         if ($request->has('search')){
             $sort_search = $request->search;
             $brands = $brands->where('name', 'like', '%'.$sort_search.'%');
@@ -64,7 +67,7 @@ class BrandController extends Controller
 
         $brand->logo = $request->logo;
         $brand->save();
-
+		
         $brand_translation = BrandTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'brand_id' => $brand->id]);
         $brand_translation->name = $request->name;
         $brand_translation->save();
@@ -121,6 +124,10 @@ class BrandController extends Controller
         }
         $brand->logo = $request->logo;
         $brand->save();
+      	Cache::forget('brands');
+      	Cache::remember('brands',now()->addMinutes(10), function () {
+        	return Brand::orderBy('name', 'asc')->get();
+        });
 
         $brand_translation = BrandTranslation::firstOrNew(['lang' => $request->lang, 'brand_id' => $brand->id]);
         $brand_translation->name = $request->name;
@@ -145,9 +152,34 @@ class BrandController extends Controller
             $brand_translation->delete();
         }
         Brand::destroy($id);
+      	Cache::forget('brands');
+      	Cache::remember('brands',now()->addMinutes(10), function () {
+        	return Brand::orderBy('name', 'asc')->get();
+        });
 
         flash(translate('Brand has been deleted successfully'))->success();
         return redirect()->route('brands.index');
 
     }
+  
+   public function updateAdminToPay(Request $request, $id)
+    {
+    	try{
+      $shop = Shop::findOrFail($id); 
+
+        $shop->admin_to_pay = $request->admin_to_pay;
+        $shop->save();
+      
+      return response()->json([
+        'success' => true,
+        'formatted_amount' => single_price(abs($shop->admin_to_pay))
+    ]);
+        }catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ],422);
+    }
+    }
+  
 }

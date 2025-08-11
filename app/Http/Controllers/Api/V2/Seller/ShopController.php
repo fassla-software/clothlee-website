@@ -67,13 +67,15 @@ class ShopController extends Controller
             $request->has('google') ||
             $request->has('twitter') ||
             $request->has('youtube') ||
-            $request->has('instagram')
+            $request->has('instagram')||
+          	$request->has('tiktok')
         ) {
             $shop->facebook = $request->facebook;
             $shop->instagram = $request->instagram;
-            $shop->google = $request->google;
+            $shop->website = $request->google;
             $shop->twitter = $request->twitter;
             $shop->youtube = $request->youtube;
+          	$shop->tiktok = $request->tiktok
         } elseif (
             $request->has('cash_on_delivery_status') ||
             $request->has('bank_payment_status') ||

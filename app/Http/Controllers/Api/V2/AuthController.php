@@ -66,7 +66,7 @@ class AuthController extends Controller
         $user->password = bcrypt($request->password);
         $user->verification_code = rand(100000, 999999);
 $user->save();
-
+ 
 try {
     $adminId = 9;
 
@@ -102,8 +102,8 @@ try {
                 } catch (\Exception $e) {
                 }
             } else {
-               // $otpController = new OTPVerificationController();
-               // $otpController->send_code($user);
+                $otpController = new OTPVerificationController();
+                $otpController->send_code($user);
             }
         }
 

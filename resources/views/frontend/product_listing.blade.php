@@ -336,10 +336,11 @@
            <button type="button" class="filter-btn" data-toggle="modal" data-target="#priceModal">
                 {{ translate('Price') }}
             </button>
+          <!--
             <button type="button" class="filter-btn" data-toggle="modal" data-target="#colorModal">
                 {{ translate('Color') }}
             </button>
-           
+           -->
             <button type="button" class="filter-btn" data-toggle="modal" data-target="#sizeModal">
                 {{ translate('Size') }}
             </button>
@@ -766,7 +767,7 @@
             @foreach ($products as $product)
                 <div class="col-6 col-md-4 col-lg-3 mb-4">
                     <div class="h-100 p-2 shadow-sm border rounded d-flex flex-column align-items-center text-center bg-white">
-                        <a href="{{ route('product', $product->slug) }}" class="d-block w-100 mb-2">
+                        <a href="{{ route('product',[$category->slug , $product->main_category->slug,$product->slug]) }}" class="d-block text-reset">
                             <img src="{{ get_image($product->thumbnail) }}"
                                  class="img-fluid w-100 rounded"
                                  style="aspect-ratio: 1/1; object-fit: cover;"
@@ -816,7 +817,7 @@
             <div class="category-product-container d-flex flex-wrap justify-content-start">
                 @foreach ($subcategoryProducts as $product)
                     <div class="category-product-box">
-                        <a href="{{ route('product', $product->slug) }}" class="d-block text-reset">
+                        <a href="{{ route('product',[$category->slug , $product->main_category->slug,$product->slug]) }}" class="d-block text-reset">
                             <img src="{{ get_image($product->thumbnail) }}" class="lazyload img-fit border rounded"
                                  alt="{{ $product->getTranslation('name') }}"
                                  onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">

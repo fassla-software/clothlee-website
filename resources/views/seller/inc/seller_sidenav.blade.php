@@ -46,17 +46,22 @@
                     </a>
                 </li>
                 <li class="aiz-side-nav-item">
-                    <a href="#" class="aiz-side-nav-link">
+                    <a href="/seller/products" class="aiz-side-nav-link">
                         <i class="las la-shopping-cart aiz-side-nav-icon"></i>
-                        <span class="aiz-side-nav-text">{{ translate('Products') }}</span>
-                        <span class="aiz-side-nav-arrow"></span>
+                        <span class="aiz-side-nav-text">{{ translate('Stock') }}</span>
+      
                     </a>
+              </li>
                     <!--Submenu-->
-                    <ul class="aiz-side-nav-list level-2">
+                    <ul class="aiz-side-nav-list">
                         <li class="aiz-side-nav-item">
-                            <a href="{{ route('seller.products') }}"
-                                class="aiz-side-nav-link {{ areActiveRoutes(['seller.products', 'seller.products.create', 'seller.products.edit']) }}">
-                                <span class="aiz-side-nav-text">{{ translate('Products') }}</span>
+                        
+                            <a href="/seller/product/create"
+                                class="aiz-side-nav-link {{ areActiveRoutes([ 'seller.products.create', 'seller.products.edit']) }}">
+                                 <i class="las la-plus aiz-side-nav-icon"></i>
+                              <span class="aiz-side-nav-text">{{ translate('Add Product') }}</span>
+                                
+
                             </a>
                         </li>
 
@@ -67,7 +72,7 @@
                             </a>
                         </li>
 
-                        <li class="aiz-side-nav-item">
+                        <li class="aiz-side-nav-item" style="display: none">
                             <a href="{{ route('seller.product_bulk_upload.index') }}"
                                 class="aiz-side-nav-link {{ areActiveRoutes(['product_bulk_upload.index']) }}">
                                 <span class="aiz-side-nav-text">{{ translate('Product Bulk Upload') }}</span>
@@ -82,21 +87,23 @@
                         <li class="aiz-side-nav-item">
                             <a href="{{ route('seller.reviews') }}"
                                 class="aiz-side-nav-link {{ areActiveRoutes(['seller.reviews']) }}">
+                                <i class="las la-star aiz-side-nav-icon"></i>
                                 <span class="aiz-side-nav-text">{{ translate('Product Reviews') }}</span>
                             </a>
                         </li>
                       <li class="aiz-side-nav-item">
                         <a href="{{route('seller.fabrics')}}" class="aiz-side-nav-link {{ areActiveRoutes(['seller.fabrics'])}}">
+                            <i class="las la-paper aiz-side-nav-icon"></i>
                           <span class="aiz-side-nav-text">{{translate('Fabric')}}</span>
                         </a>
                       </li>
                     </ul>
                 </li>
-                <li class="aiz-side-nav-item">
+                <li class="aiz-side-nav-item" style="display: none">
                     <a href="{{ route('seller.uploaded-files.index') }}"
                         class="aiz-side-nav-link {{ areActiveRoutes(['seller.uploaded-files.index', 'seller.uploads.create']) }}">
                         <i class="las la-folder-open aiz-side-nav-icon"></i>
-                        <span class="aiz-side-nav-text">{{ translate('Uploaded Files') }}</span>
+                        <span class="aiz-side-nav-text">{{ translate('Banners') }}</span>
                     </a>
                 </li>
                 @if (addon_is_activated('seller_subscription'))
@@ -216,6 +223,14 @@
         <span class="aiz-side-nav-text">{{ translate('Send Message') }}</span>
     </a>
 </li>
+  
+             <li class="aiz-side-nav-item">
+    <a href="{{ route('sms_requests.index') }}" class="aiz-side-nav-link">
+        <i class="las la-question-circle aiz-side-nav-icon"></i>
+        <span class="aiz-side-nav-text">{{ translate('Send SMS Request') }}</span>
+    </a>
+</li>
+
 
 
                 @if (addon_is_activated('refund_request'))
@@ -237,7 +252,7 @@
                     </a>
                 </li>
 
-                <li class="aiz-side-nav-item">
+                <li class="aiz-side-nav-item" style= "display :none">
                     <a href="{{ route('seller.payments.index') }}"
                         class="aiz-side-nav-link {{ areActiveRoutes(['seller.payments.index']) }}">
                         <i class="las la-history aiz-side-nav-icon"></i>
@@ -245,7 +260,7 @@
                     </a>
                 </li>
 
-                <li class="aiz-side-nav-item">
+                <li class="aiz-side-nav-item" style="display:none">
                     <a href="{{ route('seller.money_withdraw_requests.index') }}"
                         class="aiz-side-nav-link {{ areActiveRoutes(['seller.money_withdraw_requests.index']) }}">
                         <i class="las la-money-bill-wave-alt aiz-side-nav-icon"></i>

@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\Seller;
 use App\Models\User;
 use App\Models\Shop;
+use App\Models\Subscription;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Wishlist;
+use App\Models\Plan;
 use Illuminate\Support\Facades\Hash;
 use App\Notifications\EmailVerificationNotification;
 use App\Notifications\ShopVerificationNotification;
@@ -218,8 +220,10 @@ public function updateCommision(Request $request, $id)
      */
     public function edit($id)
     {
-        $shop = Shop::findOrFail(decrypt($id));
-        return view('backend.sellers.edit', compact('shop'));
+      	$Sid=decrypt($id);
+  		  $shop = Shop::with('subscription.plan')->where('id', $Sid)->firstOrFail();
+      	$plans= Plan::all();
+        return view('backend.sellers.edit', compact(['shop','plans']));
     }
 
     /**
@@ -408,5 +412,133 @@ public function updateCommision(Request $request, $id)
         $shop->save();
         $shop->user->save();
         return back();
+    }
+  
+  public function sellerPlansIndex()
+    {
+        $seller_packages = Plan::latest()->get();
+        return view('backend.sellers.sellers_packages.index', compact('seller_packages'));
+    }
+  
+   public function createPlan()
+    {
+        return view('backend.sellers.sellers_packages.create');
+    }
+  
+  
+    public function showPlan(Plan $seller_package)
+    {
+        return view('backend.seller.seller_packages.show', compact('seller_package'));
+    }
+  public function editPlan(Request $request, $id)
+    {
+        $lang = $request->lang ?? env('DEFAULT_LANGUAGE');
+        $seller_package = Plan::findOrFail($id);
+        
+        return view('backend.sellers.sellers_packages.edit', compact('seller_package', 'lang'));
+    }
+  
+ public function storePlan(Request $request)
+{
+    try {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'commission' => 'required|numeric|min:0',
+            'interval' => 'required|in:month,year',
+            'logo' => 'nullable|integer',
+            'status' => 'required|in:active,inactive'
+        ]);
+
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('seller_packages', 'public');
+        }
+
+        $seller_package = new Plan([
+            'name' => $request->name,
+            'description' => $request->description,
+            'commission' => $request->commission,
+            'interval' => $request->interval,
+            'logo' => $logoPath,
+            'status' => $request->status
+        ]);
+
+        $seller_package->save();
+
+        flash(translate('Package has been created successfully'))->success();
+        return redirect()->back();
+
+    } catch (\Exception $e) {
+        \Log::error('Failed to create seller package: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'request' => $request->all()
+        ]);
+
+        flash(translate('An error occurred while creating the package.'))->error();
+        return redirect()->back()->withInput();
+    }
+}
+
+
+public function updatePlan(Request $request, Plan $seller_package)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'required|string',
+        'commission' => 'required|numeric|min:0',
+        'interval' => 'required|in:month,year',
+        'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'status' => 'required|in:active,inactive'
+    ]);
+
+    $data = [
+        'name' => $request->name,
+        'description' => $request->description,
+        'commission' => $request->commission,
+        'interval' => $request->interval,
+        'status' => $request->status
+    ];
+
+    if ($request->hasFile('logo')) {
+        // Delete old logo if exists
+        if ($seller_package->logo && Storage::disk('public')->exists($seller_package->logo)) {
+            Storage::disk('public')->delete($seller_package->logo);
+        }
+        
+        $data['logo'] = $request->file('logo')->store('seller_packages', 'public');
+    }
+
+    $seller_package->update($data);
+
+    flash(translate('Package has been updated successfully'))->success();
+    return redirect()->route('seller_packages.index');
+}
+  
+  
+  public function assignPlan(Request $request, Shop $shop)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+        ]);
+
+        $plan = Plan::findOrFail($request->plan_id);
+        
+        // Deactivate current subscription
+        $shop->subscription()->where('status', true)->update(['status' => false]);
+
+        // Create new subscription
+        $subscription = Subscription::create([
+            'shop_id' => $shop->id,
+            'plan_id' => $plan->id,
+            'start_date' => now(),
+ 			'end_date' => $plan->interval ? 
+       				 ($plan->interval == 'month' ? now()->addMonth() : now()->addYear()) 
+        						: now()->addMonth(),           
+          'status' => true,
+        ]);
+
+        flash(translate('Subscription plan assigned successfully'))->success();
+        return redirect()->back();
     }
 }

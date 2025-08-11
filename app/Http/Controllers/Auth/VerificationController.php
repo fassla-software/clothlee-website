@@ -56,11 +56,11 @@ class VerificationController extends Controller
                             ? redirect($this->redirectPath())
                             : view('auth.'.get_setting('authentication_layout_select').'.verify_email');
         }
-        /*else {
+        else {
             $otpController = new OTPVerificationController;
             $otpController->send_code($request->user());
             return redirect()->route('verification');
-        }*/
+        }
     }
 
 

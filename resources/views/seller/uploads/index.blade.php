@@ -4,11 +4,11 @@
 <div class="aiz-titlebar text-left mt-2 mb-3">
 	<div class="row align-items-center">
 		<div class="col-md-6">
-			<h1 class="h3">{{translate('All uploaded files')}}</h1>
+			<h1 class="h3">{{translate('All uploaded Banners')}}</h1>
 		</div>
 		<div class="col-md-6 text-md-right">
 			<a href="{{ route('seller.uploads.create') }}" class="btn btn-primary">
-				<span>{{translate('Upload New File')}}</span>
+				<span>{{translate('Upload New Banner')}}</span>
 			</a>
 		</div>
 	</div>
@@ -18,7 +18,7 @@
     <form id="sort_uploads" action="">
         <div class="card-header row gutters-5">
             <div class="col">
-                <h5 class="mb-0 h6">{{translate('All files')}}</h5>
+                <h5 class="mb-0 h6">{{translate('All Banners')}}</h5>
             </div>
 			<div class="dropdown mb-2 mb-md-0">
                 <button class="btn border dropdown-toggle" type="button" data-toggle="dropdown">
@@ -37,7 +37,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <input type="text" class="form-control form-control-xs" name="search" placeholder="{{ translate('Search your files') }}" value="{{ $search }}">
+                <input type="text" class="form-control form-control-xs" name="search" placeholder="{{ translate('Search your Banners') }}" value="{{ $search }}">
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">{{ translate('Search') }}</button>

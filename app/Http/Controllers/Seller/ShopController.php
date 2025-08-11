@@ -65,6 +65,12 @@ class ShopController extends Controller
             $shop->banners_half_width = $request->banners_half_width;
             $shop->banner_full_width_2 = $request->banner_full_width_2;
         }
+      	
+      if($request->has('admin_to_pay'))
+      	{
+        
+        	$shop->admin_to_pay = $request->admin_to_pay;
+     	 }
 
         if ($shop->save()) {
             flash(translate('Your Shop has been updated successfully!'))->success();

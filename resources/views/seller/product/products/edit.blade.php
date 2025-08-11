@@ -198,48 +198,124 @@
                     @endif
                 </div>
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0 h6">{{translate('Product Images')}}</h5>
-                </div>
-                <div class="card-body">
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0 h6">{{translate('Product Images')}}</h5>
+    </div>
+    <div class="card-body">
 
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="signinSrEmail">{{translate('Gallery Images')}}</label>
-                        <div class="col-md-8">
-                            <div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="true">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text bg-soft-secondary font-weight-medium">
-                                        {{ translate('Browse')}}</div>
-                                </div>
-                                <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                <input type="hidden" name="photos" value="{{ $product->photos }}"
-                                    class="selected-files">
-                            </div>
-                            <div class="file-preview box sm">
-                            </div>
-                            <small class="text-muted">{{translate('These images are visible in product details page gallery. Minimum dimensions required: 900px width X 900px height.')}}</small>
-                        </div>
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label" for="signinSrEmail">{{translate('Gallery Images')}}</label>
+            <div class="col-md-8">
+                <div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="true">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text bg-soft-secondary font-weight-medium">
+                            {{ translate('Browse')}}</div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="signinSrEmail">{{translate('Thumbnail Image')}}</label>
-                        <div class="col-md-8">
-                            <div class="input-group" data-toggle="aizuploader" data-type="image">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text bg-soft-secondary font-weight-medium">
-                                        {{ translate('Browse')}}</div>
-                                </div>
-                                <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                <input type="hidden" name="thumbnail_img" value="{{ $product->thumbnail_img }}"
-                                    class="selected-files">
-                            </div>
-                            <div class="file-preview box sm">
-                            </div>
-                            <small class="text-muted">{{translate("This image is visible in all product box. Minimum dimensions required: 195px width X 195px height. Keep some blank space around main object of your image as we had to crop some edge in different devices to make it responsive.")}}</small>
-                        </div>
-                    </div>
+                    <div class="form-control file-amount">{{ translate('Choose File') }}</div>
+                    <input type="hidden" name="photos" value="{{ $product->photos }}"
+                        class="selected-files">
                 </div>
+                <div class="file-preview box sm">
+                </div>
+                <small class="text-muted">{{translate('These images are visible in product details page gallery. Minimum dimensions required: 900px width X 900px height.')}}</small>
             </div>
+        </div>
+        
+        <!-- Hide the thumbnail section but keep it functional -->
+        <div class="form-group row" style="display: none;">
+            <label class="col-md-3 col-form-label" for="signinSrEmail">{{translate('Thumbnail Image')}}</label>
+            <div class="col-md-8">
+                <div class="input-group" data-toggle="aizuploader" data-type="image">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text bg-soft-secondary font-weight-medium">
+                            {{ translate('Browse')}}</div>
+                    </div>
+                    <div class="form-control file-amount">{{ translate('Choose File') }}</div>
+                    <input type="hidden" name="thumbnail_img" value="{{ $product->thumbnail_img }}"
+                        class="selected-files">
+                </div>
+                <div class="file-preview box sm">
+                </div>
+                <small class="text-muted">{{translate("This image is visible in all product box. Minimum dimensions required: 195px width X 195px height.")}}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to sync thumbnail with first gallery image
+    function syncThumbnailWithGallery() {
+        const galleryInput = document.querySelector('input[name="photos"]');
+        const thumbnailInput = document.querySelector('input[name="thumbnail_img"]');
+        
+        if (galleryInput && thumbnailInput) {
+            const galleryValue = galleryInput.value;
+            if (galleryValue) {
+                // Split the comma-separated file IDs and get the first one
+                const fileIds = galleryValue.split(',');
+                if (fileIds.length > 0 && fileIds[0].trim()) {
+                    thumbnailInput.value = fileIds[0].trim();
+                    
+                    // Trigger the thumbnail preview update
+                    if (typeof AIZ !== 'undefined' && AIZ.uploader && AIZ.uploader.previewGenerate) {
+                        AIZ.uploader.previewGenerate();
+                    }
+                }
+            }
+        }
+    }
+
+    // Initial sync on page load (in case there are existing images)
+    setTimeout(function() {
+        syncThumbnailWithGallery();
+    }, 1000);
+
+    // Watch for changes in the gallery input
+    const galleryInput = document.querySelector('input[name="photos"]');
+    if (galleryInput) {
+        // Use MutationObserver to watch for value changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                    syncThumbnailWithGallery();
+                }
+            });
+        });
+
+        observer.observe(galleryInput, {
+            attributes: true,
+            attributeFilter: ['value']
+        });
+
+        // Also listen for input events
+        galleryInput.addEventListener('input', syncThumbnailWithGallery);
+        galleryInput.addEventListener('change', syncThumbnailWithGallery);
+    }
+
+    // Listen for aizuploader events if available
+    if (typeof $ !== 'undefined') {
+        $(document).on('change', 'input[name="photos"]', function() {
+            setTimeout(syncThumbnailWithGallery, 100);
+        });
+        
+        // Listen for aizuploader completion
+        $(document).on('aizuploader.complete', '[data-toggle="aizuploader"]', function() {
+            if ($(this).find('input[name="photos"]').length > 0) {
+                setTimeout(syncThumbnailWithGallery, 200);
+            }
+        });
+
+        // Listen for file removal events
+        $(document).on('aizuploader.removed', '[data-toggle="aizuploader"]', function() {
+            if ($(this).find('input[name="photos"]').length > 0) {
+                setTimeout(syncThumbnailWithGallery, 200);
+            }
+        });
+    }
+});
+</script>
             <div class="card" style="display: none">
                 <div class="card-header" style="display: none">
                     <h5 class="mb-0 h6">{{translate('Product Videos')}}</h5>
@@ -273,7 +349,7 @@
                     <h5 class="mb-0 h6">{{translate('Product Variation')}}</h5>
                 </div>
                 <div class="card-body">
-                    <div class="form-group row">
+                    <div class="form-group row" style= "display: none">
                         <div class="col-lg-3">
                             <input type="text" class="form-control" value="{{translate('Colors')}}" disabled>
                         </div>
@@ -637,46 +713,71 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0 h6">{{ translate('Product Category') }}</h5>
-                    <h6 class="float-right fs-13 mb-0">
-                        {{ translate('Select Main') }}
-                        <span class="position-relative main-category-info-icon">
-                            <i class="las la-question-circle fs-18 text-info"></i>
-                            <span class="main-category-info bg-soft-info p-2 position-absolute d-none border">{{ translate('This will be used for commission based calculations and homepage category wise product Show') }}</span>
-                        </span>
-                    </h6>
-                </div>
-              
-<div class="card-body">
-    <ul class="list-unstyled">
-        @foreach ($categories as $category)
-            <li>
-                <h6>{{ $category->name }}</h5> <!-- Main category without radio -->
+<div class="col-lg-4">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0 h6">{{ translate('Product Category') }}</h5>
+            <h6 class="float-right fs-13 mb-0">
+                {{ translate('Select Main') }}
+                <span class="position-relative main-category-info-icon">
+                    <i class="las la-question-circle fs-18 text-info"></i>
+                    <span class="main-category-info bg-soft-info p-2 position-absolute d-none border">{{ translate('This will be used for commission based calculations and homepage category wise product Show') }}</span>
+                </span>
+            </h6>
+        </div>
+        
+        <div class="card-body">
+            <ul class="list-unstyled">
+                @foreach ($categories as $category)
+                    <li>
+                        <h6>
+                            <!-- Parent category with an arrow -->
+                            <span class="toggle-arrow" data-target="#sub-category-{{ $category->id }}">
+                                <i class="las la-arrow-down"></i>
+                            </span>
+                            {{ $category->name }}
+                        </h6>
 
-                @if ($category->childrenCategories && count($category->childrenCategories) > 0)
-                    <ul>
-                        @foreach ($category->childrenCategories as $childCategory)
-                            <li>
-                                <input type="radio" name="category_id" 
-                                       value="{{ $childCategory->id }}" 
-                                       data-parent="{{ $category->id }}"
-                                       @if($product->category_id == $childCategory->id) checked @endif>
-                                {{ $childCategory->name }}
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
-            </li>
-        @endforeach
-    </ul>
-    
-    <!-- Hidden input to store the parent category -->
-    <input type="hidden" id="parent_category" name="parent_category" 
-           value="{{ $product->parent_category ?? '' }}">
+                        <!-- Subcategories with collapse functionality -->
+                        @if ($category->childrenCategories && count($category->childrenCategories) > 0)
+                            @php
+                                $hasSelectedChild = $category->childrenCategories->contains('id', $product->category_id);
+                            @endphp
+                            <ul id="sub-category-{{ $category->id }}" class="{{ $hasSelectedChild ? '' : 'collapse' }}">
+                                @foreach ($category->childrenCategories as $childCategory)
+                                    <li>
+                                        <input type="radio" name="category_id" 
+                                               value="{{ $childCategory->id }}" 
+                                               data-parent="{{ $category->id }}"
+                                               @if($product->category_id == $childCategory->id) checked @endif>
+                                        {{ $childCategory->name }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+            
+            <!-- Hidden input to store the parent category -->
+            <input type="hidden" id="parent_category" name="parent_category" 
+                   value="{{ $product->parent_category ?? '' }}">
+        </div>
+    </div>
 </div>
+
+
+<!-- Add CSS for the collapsed list -->
+<style>
+    .collapse {
+        display: none;
+    }
+
+    .toggle-arrow {
+        cursor: pointer;
+        margin-right: 10px;
+    }
+</style>
               
                 <!-- <div class="card-body ">
                     <div class="h-300px overflow-auto c-scrollbar-light">
@@ -697,7 +798,7 @@
               
             </div>
 
-            <div class="card">
+            <div class="card" style= " display: none ">
                 <div class="card-header">
                     <h5 class="mb-0 h6" class="dropdown-toggle" data-toggle="collapse" data-target="#collapse_2">
                         {{translate('Shipping Configuration')}}
@@ -756,7 +857,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style= " display: none ">
                 <div class="card-header">
                     <h5 class="mb-0 h6">{{translate('Low Stock Quantity Warning')}}</h5>
                 </div>
@@ -771,7 +872,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style= " display: none ">
                 <div class="card-header">
                     <h5 class="mb-0 h6">
                         {{translate('Stock Visibility State')}}
@@ -816,7 +917,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style= " display: none ">
                 <div class="card-header">
                     <h5 class="mb-0 h6">{{translate('Cash On Delivery')}}</h5>
                 </div>
@@ -844,7 +945,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style= " display: none ">
                 <div class="card-header">
                     <h5 class="mb-0 h6">{{translate('Estimate Shipping Time')}}</h5>
                 </div>
@@ -864,7 +965,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style= " display: none ">
                 <div class="card-header">
                     <h5 class="mb-0 h6">{{translate('VAT & Tax')}}</h5>
                 </div>
@@ -1178,4 +1279,55 @@
         toggle.dispatchEvent(new Event('change')); // Trigger initial state setup
     });
 </script>
+
+
+
+<script>
+$(document).ready(function() {
+    // Initialize arrows based on current state
+    $('.toggle-arrow').each(function() {
+        const targetSelector = $(this).attr('data-target');
+        const $subCategory = $(targetSelector);
+        
+        if ($subCategory.hasClass('collapse') || $subCategory.is(':hidden')) {
+            $(this).html('<i class="las la-arrow-down"></i>');
+        } else {
+            $(this).html('<i class="las la-arrow-up"></i>');
+        }
+    });
+    
+    // Category toggle functionality
+    $('.toggle-arrow').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const targetSelector = $(this).attr('data-target');
+        const $subCategory = $(targetSelector);
+        const $arrow = $(this);
+        
+        if ($subCategory.length) {
+            if ($subCategory.hasClass('collapse') || $subCategory.is(':hidden')) {
+                $subCategory.removeClass('collapse').show();
+                $arrow.html('<i class="las la-arrow-up"></i>');
+            } else {
+                $subCategory.addClass('collapse').hide();
+                $arrow.html('<i class="las la-arrow-down"></i>');
+            }
+        }
+    });
+    
+    // Prevent clicks inside subcategories from bubbling up
+    $('ul[id^="sub-category-"]').on('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    // Handle category selection and prevent closing dropdown
+    $('input[name="category_id"]').on('click change', function(e) {
+        e.stopPropagation();
+        let parentId = $(this).data("parent");
+        $("#parent_category").val(parentId);
+    });
+});
+</script>
+
 @endsection

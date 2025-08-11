@@ -144,7 +144,7 @@
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" data-toggle="tab" data-type="seller" href="javascript:void(0);"
-                                            data-target="#sellers-notifications" role="tab" id="sellers-tab">{{ translate('Sellers') }}</a>
+                                            data-target="#sellers-notifications" role="tab" id="sellers-tab">{{ translate('Brands') }}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" data-toggle="tab" data-type="seller" href="javascript:void(0);"

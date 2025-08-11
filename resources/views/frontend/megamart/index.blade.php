@@ -282,10 +282,10 @@
             @foreach ($featured_categories as $category)
                 @php
                     $category_name = $category->getTranslation('name');
-                    $child_categories = \App\Models\Category::where('parent_id', $category->id)->pluck('id');
+                    $child_categories = \App\Models\Category::where('parent_id', $category->id)->pluck('id','slug');
                     $category_products = \App\Models\Product::whereHas('categories', function ($query) use ($child_categories) {
                         $query->whereIn('categories.id', $child_categories);
-                    })->get();
+                    })->with('main_category')->get();
                 @endphp
 
                 @if ($category_products->count() > 0)
@@ -305,28 +305,28 @@
                         <div class="product-slider">
                             <div class="slider-track">
                                 @foreach ($category_products as $product)
-                                  <div class="product-item">
-    <a href="{{ route('product', $product->slug) }}" class="d-block text-reset">
+                                <div class="product-item">
+    <a href="{{ route('product',['category_slug'=>$category->slug,'sub_category_slug'=>$product->main_category->slug,'slug'=> $product->slug]) }}" class="d-block text-reset h-100 w-100">
         <!-- Image Wrapper to Ensure Consistency -->
         <div class="product-img">
             <img src="{{ get_image($product->thumbnail) }}" 
                  alt="{{ $product->getTranslation('name') }}"
                  onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
         </div>
+
+        <!-- Subcategory Name Below Image -->
+        @php
+            $subcategory = $product->categories->where('level', 1)->first();
+        @endphp
+        <div class="fs-14 text-center text-black fw-600 mt-2">
+            {{ $subcategory ? $subcategory->getTranslation('name') : '-' }}
+        </div>
+
+        <!-- Price -->
+        <span class="d-block fw-700 text-primary mt-1">
+            {{ home_discounted_base_price($product) }}
+        </span>
     </a>
-
-    <!-- Subcategory Name Below Image -->
-    @php
-        $subcategory = $product->categories->where('level', 1)->first();
-    @endphp
-    <div class="fs-14 text-center text-black fw-600 mt-2">
-        {{ $subcategory ? $subcategory->getTranslation('name') : '-' }}
-    </div>
-
-    <!-- Price -->
-    <span class="d-block fw-700 text-primary mt-1">
-        {{ home_discounted_base_price($product) }}
-    </span>
 </div>
 
                                 @endforeach

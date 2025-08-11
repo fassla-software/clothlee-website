@@ -111,9 +111,13 @@ class CommissionController extends Controller
                 $commission_percentage = 0;
                 
                 if(get_setting('vendor_commission_activation')){
-                    if (get_setting('category_wise_commission')) {
+                
+                  if( $orderDetail->product->user->shop->subscription)
+                  {
+                     $commission_percentage=0;
+                  }else if (get_setting('category_wise_commission')) {
                         $commission_percentage = $orderDetail->product->main_category->commision_rate;
-                    } else if ($orderDetail->product->user->user_type == 'seller') {
+                    } `else if ($orderDetail->product->user->user_type == 'seller') {
                         //$commission_percentage = get_setting('vendor_commission');
                       $commission_percentage = $orderDetail->product->user->shop->commision;
                     }
@@ -170,7 +174,7 @@ class CommissionController extends Controller
                     }
                     $seller->save();
 
-                    $commission_history = new CommissionHistory;
+                    $commission_history = new CommissionHistory();
                     $commission_history->order_id = $order->id;
                     $commission_history->order_detail_id = $orderDetail->id;
                     $commission_history->seller_id = $orderDetail->seller_id;

@@ -11,12 +11,17 @@ use Cache;
 class BrandController extends Controller
 {
     public function index(Request $request)
-    {
-        $brand_query = Brand::query();
-        if($request->name != "" || $request->name != null){
+    {	
+      	
+        $brand_query = Cache::get('brand_query')?? Cache::remember('brand_query',now()->addMinutes(10),function () {
+        	
+        	return Brand::query();
+      		  if($request->name != "" || $request->name != null){
             $brand_query->where('name', 'like', '%'.$request->name.'%');
             SearchUtility::store($request->name);
         }
+          
+        });
         return new BrandCollection($brand_query->paginate(10));
     }
 

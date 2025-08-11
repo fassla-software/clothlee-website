@@ -19,7 +19,7 @@
                                  <div class="mb-3 mt-4 mx-auto mx-lg-0 text-center">
     <img src="https://www.clothlee.com/public/uploads/all/JTNLMogpONWocmgq3kmEONfAbphjNPf5amXD16k0.png" 
          alt="Site Icon" 
-         style="max-height: 80px; width: auto; margin-top: 30px;">
+         style="max-height: 150px; width: auto; margin-top: 20px;">
 </div>
 
                                 <!-- Titles -->

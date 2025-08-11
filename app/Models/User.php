@@ -171,4 +171,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function userCoupon(){
         return $this->hasOne(UserCoupon::class);
     }
+  
+    public function subscriptions(): HasMany
+          {
+              return $this->hasMany(Subscription::class);
+          }
+  
+  
 }

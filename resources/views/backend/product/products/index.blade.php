@@ -205,8 +205,12 @@
                                 <span class="slider round"></span>
                             </label>
                         </td>
+  @php
+   $pCategory = \App\Models\Category::where('id', $product->main_category->parent_id)->first();
+@endphp
+
                         <td class="text-right">
-                            <a class="btn btn-soft-success btn-icon btn-circle btn-sm"  href="{{ route('product', $product->slug) }}" target="_blank" title="{{ translate('View') }}">
+                            <a class="btn btn-soft-success btn-icon btn-circle btn-sm"  href="{{ route('product',[$pCategory->slug,$product->main_category->slug, $product->slug]) }}" target="_blank" title="{{ translate('View') }}">
                                 <i class="las la-eye"></i>
                             </a>
                             @can('product_edit')

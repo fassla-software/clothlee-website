@@ -340,4 +340,5 @@ class AdminController extends Controller
         flash(translate('Cache cleared successfully'))->success();
         return back();
     }
+ 
 }

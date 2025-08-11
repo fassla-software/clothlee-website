@@ -199,7 +199,9 @@ $shippingAddress['postal_code'] = $address->postal_code ?? '';
             $order->save();
         }
         $combined_order->save();
-
+	
+      (new CommissionController())->calculateCommission($order);
+      
         Cart::where('user_id', auth()->user()->id)->active()->delete();
 
         if (

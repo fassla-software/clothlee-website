@@ -14,6 +14,7 @@ use App\Http\Resources\V2\ProductMiniCollection;
 
 class StoreCategoryController extends Controller
 {
+  
 public function storeCategory($slug)
 {
     $shop = Shop::where('slug', $slug)->firstOrFail();
@@ -34,11 +35,25 @@ public function storeCategory($slug)
     $categories = Category::whereIn('id', $parentIds)
         ->select('id', 'name', 'icon', 'slug')
         ->get()
-        ->map(function ($category) use ($userId) {
+        ->map(function ($category) use ($userId, $shop) {
             // Get products for each main category
             $products = Product::where('user_id', $userId)
                 ->whereIn('category_id', $category->categories->pluck('id'))
-                ->get();
+                ->where('published', 1);
+
+            // Apply default sort
+            switch ($shop->default_sort) {
+                case 'cheapest':
+                    $products = $products->orderBy('unit_price', 'asc');
+                    break;
+                case 'newest':
+                default:
+                    $products = $products->orderBy('created_at', 'desc');
+                    break;
+            }
+
+            $products = $products->get();
+
             return [
                 'name' => $category->name,
                 'icon' => uploaded_asset($category->icon),
@@ -49,11 +64,12 @@ public function storeCategory($slug)
 
     return response()->json([
         'message' => 'Store Main Categories with Products',
+        'default_sort' => $shop->default_sort,
         'categories' => $categories,
     ]);
 }
 
-
+  
   
 	public function storeSubCategory($store_slug, $category_slug)
     {

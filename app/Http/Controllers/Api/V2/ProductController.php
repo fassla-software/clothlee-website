@@ -144,16 +144,33 @@ class ProductController extends Controller
         );
     }
 
-    public function seller($id, Request $request)
-    {
-        $shop = Shop::findOrFail($id);
-        $products = Product::where('added_by', 'seller')->where('user_id', $shop->user_id);
-        if ($request->name != "" || $request->name != null) {
-            $products = $products->where('name', 'like', '%' . $request->name . '%');
-        }
-        $products->where('published', 1);
-        return new ProductMiniCollection($products->latest()->paginate(10));
+   public function seller($id, Request $request)
+{
+    $shop = Shop::findOrFail($id);
+
+    $products = Product::where('added_by', 'seller')
+        ->where('user_id', $shop->user_id)
+        ->where('published', 1);
+
+    if (!empty($request->name)) {
+        $products->where('name', 'like', '%' . $request->name . '%');
     }
+
+    // Apply default sort
+    switch ($shop->default_sort) {
+        case 'cheapest':
+            $products = $products->orderBy('unit_price', 'asc');
+            break;
+        case 'newest':
+        default:
+            $products = $products->orderBy('created_at', 'desc');
+            break;
+    }
+
+return (new ProductMiniCollection($products->paginate(10)))
+    ->additional(['default_sort' => $shop->default_sort]);
+}
+
 
     public function categoryProducts($slug, Request $request)
     {

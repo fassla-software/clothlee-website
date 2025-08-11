@@ -15,7 +15,7 @@
                     <div class="row gutters-10 align-items-center hov-scale-img hov-shadow-md overflow-hidden has-transition">
                         <div class="col-xl-4 col-lg-6 col-4">
                             <!-- Image -->
-                            <a href="{{ route('product', $top_product->slug) }}"
+                            <a href="{{ route('product', [$category->slug,'sub_category_slug'=>$top_product->main_category->slug,'slug'=>$top_product->slug]) }}"
                                 class="d-block text-reset">
                                 <img class="img-fit lazyload h-80px h-md-150px h-lg-80px has-transition"
                                     src="{{ static_asset('assets/img/placeholder.jpg') }}"
@@ -28,7 +28,7 @@
                            <!-- Subcategory name instead of product name -->
 <div class="d-lg-none d-xl-block mb-3">
     <h4 class="fs-14 fw-400 text-truncate-2">
-        <a href="{{ route('product', $top_product->slug) }}"
+       <a href="{{ route('product', [$category->slug,'sub_category_slug'=>$top_product->main_category->slug,'slug'=>$top_product->slug]) }}"
            class="d-block text-reset hov-text-primary">
             {{ $top_product->main_category?->getTranslation('name') }}
         </a>
